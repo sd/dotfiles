@@ -1,0 +1,20 @@
+# ENVIRONMENT SETUP NOTES
+
+# Install Homebrew
+
+# Install rvm
+
+# Define gem defaults
+
+# Customize default gems for rvm
+gem install wirble utility_belt
+
+# Install typical ruby versions: 1.8.7, 1.9.2 and 1.9.3
+ 
+############################################################################################################################
+# Fix ruby's readline
+#-------------------------------------------------------------
+# from http://blog.plataformatec.com.br/2010/05/accented-chars-in-irb-with-rvm-and-ruby-1-8-7/
+brew install readline
+brew link readline
+rvm install 1.8.7 -C --enable-shared,--with-readline-dir=/usr/local

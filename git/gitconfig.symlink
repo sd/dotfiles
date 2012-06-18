@@ -1,0 +1,32 @@
+[user]
+  name = Sebastian Delmont
+  email = sd@notso.net
+
+[color]
+  diff = auto
+  status = auto
+  branch = auto
+
+[apply]
+  whitespace = nowarn
+
+[alias]
+  s = svn
+  sdc = svn dcommit
+  sci = svn dcommit
+  srb = svn rebase
+  sup = svn rebase
+  st = status
+  ci = commit
+  ca = commit -a
+  co = checkout
+  br = branch
+  rb = rebase
+  chpk = cherry-pick 
+  lognew = !git fetch --quiet && git log --abbrev-commit --pretty=oneline  ..`git remote`
+  logmine = !git log --abbrev-commit --pretty=oneline  `git remote`..
+  get = !echo "PULLING:" && git lognew && git pull --rebase 
+  g   = !git get
+  put = !git get && echo "PUSHING:" && git logmine && git push
+  p   = !git put
+

@@ -1,0 +1,51 @@
+#==============================================================================
+# SSH CONFIG
+#   Configuration for ssh
+
+#GssapiDelegateCredentials no
+#GssapiAuthentication no
+
+# Speed up multiple connections to the same host
+# by using shared sessions
+#ControlMaster auto
+#ControlPath ~/.ssh/master-%r@%h:%p
+
+#==============================================================================
+# Define a few aliases for convenience
+Host home
+  HostName home.notso.net
+  User home
+
+Host router
+  HostName router.local
+  User root
+
+Host github-sd
+  HostName github.com
+  User git
+  IdentityFile /Users/sd/.ssh/id_rsa
+  HostKeyAlias github-sd
+
+Host heroku-biked
+  IdentityFile /Users/sd/.ssh/biked_id_rsa
+  HostName heroku.com
+#  User git
+#  HostKeyAlias heroku-biked
+
+Host github-meibell
+  HostName github.com
+  User git
+  IdentityFile /Users/sd/.ssh/meibell.rsa
+  HostKeyAlias github-meibell
+
+#==============================================================================
+Host *
+  # Make sure the session never times out because of a stupid firewall 
+  # or some other condition
+  ServerAliveInterval 30
+  ServerAliveCountMax 10
+  # Forward agent
+  ForwardAgent yes
+  # IdentityFile ~/.ssh/id_rsa 
+
+
