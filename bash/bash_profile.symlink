@@ -102,7 +102,7 @@ fi
 export CVS_RSH=ssh
 
 export LESS="--quit-at-eof --quit-if-one-screen --ignore-case --RAW-CONTROL-CHARS"
-export MORE="$LESS"
+# export MORE="$LESS"
 
 #==============================================================================
 #-- BASH RC -------------------------------------------------------------------
