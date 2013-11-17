@@ -17,8 +17,110 @@ if [ -r /etc/bashrc ]; then
   source /etc/bashrc
 fi
 
-#==============================================================================
-#-- ALIASES -------------------------------------------------------------------
+
+#=============================================================================
+#-- ENVIRONMENT & PATH -------------------------------------------------------
+if [ "$ENVIRONMENT" = "" ]; then
+  if [ $(uname) = Darwin ]; then
+    export ENVIRONMENT="OSX"
+
+    export PATH=/usr/bin:/bin:/usr/sbin:/sbin
+    export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Home
+    # Fink Environment
+    if [ -r /sw/bin/init.sh ]; then
+      source /sw/bin/init.sh
+    fi
+
+    # DarwinPorts
+    if [ -d /opt/local/bin ]; then
+      export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+      export MANPATH=/opt/local/share/man:$MANPATH
+      export INFOPATH=/opt/local/share/man:$INFOPATH
+    fi
+
+    if [ -d ~/Work/tools/android-sdk ]; then
+      export PATH=~/Work/tools/android-sdk/tools:~/Work/tools/android-sdk/platform-tools:$PATH
+    fi
+
+    if [ -d ~/Work/tools/scala ]; then
+      export PATH=~/Work/tools/scala/bin:$PATH
+    fi
+
+    if [ -d /usr/local/mysql/lib ]; then
+      export DYLD_LIBRARY_PATH=/usr/local/mysql/lib:$DYLD_LIBRARY_PATH
+    fi
+
+    if [ -d /usr/local/lib/node_modules ]; then
+      export NODE_PATH=/usr/local/lib/node_modules:$NODE_PATH
+    fi
+  elif [ "$OSTYPE" = "linux-gnu" ]; then
+    export ENVIRONMENT="Linux"
+  
+    export PATH=/usr/bin:/bin:/usr/sbin:/sbin:~/bin
+  elif [ "$OSTYPE" = "solaris2.9" ]; then
+    export ENVIRONMENT="Solaris" 
+
+  elif [ "$OSTYPE" = "cygwin" ]; then
+    export ENVIRONMENT="Win32 Cygwin"
+  else 
+    export ENVIRONMENT="Unknown"
+  fi
+fi
+
+export PATH=~/bin:~/.bin:/usr/local/bin:/usr/local/sbin:$PATH
+
+#=============================================================================
+#-- HISTORY ------------------------------------------------------------------
+
+# Ignore anything that starts with a space, or bg/fg, or exit
+#export HISTIGNORE="[ \t]*"
+# I like a long history
+export HISTSIZE=1000
+export HISTFILESIZE=500
+# And let's append, not overwrite, so we don't lose history when using multiple terminals
+shopt -s histappend
+# Enable multiline commands in history
+shopt -s cmdhist
+# Edit substituted commands before executing
+shopt -s histverify
+# Remove duplicates from history
+export HISTCONTROL=ignoredups
+
+function help_history {
+  echo "Command Selection"
+  echo "    !! - Last command          !-n - nth previous command"
+  echo "Substring Selection"
+  echo "    !!:$ - Last word (or !$)"
+  echo "    !!:^ - First word (not zeroth, the command)"
+  echo "    !!:n - nth word"
+  echo "  !!:n-m - nth to mth words"
+  echo "    !!:* - All words except zeroth"
+  echo "Modifiers (!!:n:modifier)"
+  echo "    :h - Remove trailing pathname (head)   :t - Remove leading pathname (tail)"
+  echo "    :r - Remove trailing extension         :e - Remove all but extension"
+}
+
+#=============================================================================
+#-- Editors & Programs -------------------------------------------------------
+if [ -f /usr/bin/pico ]; then
+  export EDITOR="/usr/bin/pico -w"
+elif [ -f /usr/local/bin/pico ]; then
+  export EDITOR="/usr/local/bin/pico -w"
+elif [ -f /usr/bin/nano ]; then
+  export EDITOR="/usr/bin/nano -w"
+elif [ -f /usr/local/bin/nano ]; then
+  export EDITOR="/usr/local/bin/nano -w"
+fi
+
+export CVS_RSH=ssh
+
+export LESS="--quit-at-eof --ignore-case --RAW-CONTROL-CHARS"
+export MORE="$LESS"
+
+#=============================================================================
+#-- ALIASES ------------------------------------------------------------------
+alias more=less
+
 alias e="$EDITOR"
 
 alias l="ls -lh"
@@ -35,6 +137,7 @@ fi
 
 alias s="screen -xRRU"
 alias r="rake"
+alias fr="FASTRAKE=1 rake"
 alias t="tail -f $1|more"
 
 alias sup="svn up"
@@ -67,6 +170,100 @@ function iso {
 utf
 
 
+function bundle_exec {
+  if [[ -a Gemfile ]]; then
+    bundle exec $*
+  else
+    $*
+  fi
+}
+
+alias rake="bundle_exec rake"
+alias cap="bundle_exec cap"
+alias spec="bundle_exec spec"
+
+#==============================================================================
+# StreetEasy specific aliases
+alias securrent="cd /home/app/app/production/current"
+alias seconsole="cd /home/app/app/production/current && ./script/console production"
+
+#==============================================================================
+# Based on http://gist.github.com/317004, but renamed as 'cds'
+
+# Help: cds -h
+# Show all links: cds
+# Delete link: cds -d foo
+# Clear all: cds -c
+# Store link to working directory: cds -a foo
+# Store link to given path: cds -n foo /some/path
+# Go to link: cds foo
+function cds() {
+  mkdir -p ~/.cds
+  dir=""
+  if [ -z "$1" ]; then
+    ls -Al ~/.cds
+  elif [ "-h" == "$1" ]; then
+    echo 'Usage: cds [-h | <name> | -a <name> | -n <name> <path> | -d <name> | -c]' >&2
+    return
+  elif [ "-c" == "$1" ]; then
+    for name in $(ls ~/.cdg); do
+      unlink ~/.cds/${name}
+    done
+  elif [ "-a" == "$1" ]; then
+    if [ -z "$2" ]; then
+      echo 'Usage: cds -a <name>' >&2
+      return
+    fi
+    ln -s $(pwd) ~/.cds/$2
+  elif [ "-n" == "$1" ]; then
+    if [ -z "$2" ]; then
+      echo 'Usage: cds -n <name> <path>' >&2
+      return
+    fi
+    ln -s $3 ~/.cds/$2
+  elif [ "-d" == "$1" ]; then
+    if [ -z "$2" ]; then
+      echo 'Usage: cds -d <name>' >&2
+      return
+    fi
+    unlink ~/.cds/$2
+  else
+    cd -P ~/.cds/$1
+  fi
+}
+
+function _cds() {
+  mkdir -p ~/.cds
+  local word=${COMP_WORDS[COMP_CWORD]}
+  local names=$(/bin/ls ~/.cds/)
+  COMPREPLY=($(compgen -W "${names}" -- "${word}"))
+  if [ -z ${COMPREPLY} ]; then COMPREPLY=""; fi
+}
+
+complete -o nospace -o default -F _cds cds
+
+#==============================================================================
+# http://daniele.livejournal.com/76011.html
+function up() {
+  dir=""
+  if [ -z "$1" ]; then
+    dir=..
+  elif [[ $1 =~ ^[0-9]+$ ]]; then
+    x=0
+    while [ $x -lt ${1:-1} ]; do
+      dir=${dir}../
+      x=$(($x+1))
+    done
+  else
+    dir=${PWD%/$1/*}/$1
+  fi
+  cd "$dir";
+}
+
+function upstr() {
+  echo "$(up "$1" && pwd)";
+}
+
 #==============================================================================
 # from http://www.ncb.ernet.in/~nihar/utilLinks.php#bw-util
 function bandwidth {
@@ -96,6 +293,11 @@ function sudobash {
 }
 alias sudoroot="sudobash root"
 alias sb="sudobash"
+
+#==============================================================================
+function longrun {
+  echo $1 | sendmail 6465412955@tmomail.net
+}
 
 #==============================================================================
 #-- Deploy this file ----------------------------------------------------------
@@ -136,6 +338,11 @@ if [ -r "$ORIGINALHOME/.bin/git-completion.bash" ]; then
   source "$ORIGINALHOME/.bin/git-completion.bash"
   complete -o default -o nospace -F _git g
 fi
+
+#==============================================================================
+export LSCOLORS=Dxfxcxdxbxegedabagacad
+# dir, link, socket, pipe, exec, block special, char special, suid, sgid, sticky, writtable
+# defaults to exfxcxdxbxegedabagacad
 
 #==============================================================================
 #-- ANSI Codes ----------------------------------------------------------------
@@ -196,6 +403,9 @@ fi
 
 
 function promptcommand {
+  history -a  # Save new commands to history file
+  history -n  # Reload history
+
   LAST_ERROR=$?
   PROMPT_MSG=""
   if [ "$LAST_ERROR" != "0" ]; then
@@ -204,13 +414,15 @@ function promptcommand {
 
   GITBRANCH="`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (git: \1)/'`"  # probably_corey +5 in unix
 
-  XTERM_TITLE="`whoami`@`hostname -s` : `pwd`"
+  WHOAMI="`whoami`@`hostname -s | tr [A-Z] [a-z]`"
+
+  XTERM_TITLE="${WHOAMI} : `pwd`"
   echo -ne "${XTERM_SET_TITLE}${XTERM_TITLE}${XTERM_END}"
 
   if [ "$TAB" != "" ]; then
     TAB_TITLE="$TAB"
   else
-    TAB_TITLE="`whoami`@`hostname -s`"
+    TAB_TITLE="${WHOAMI}"
   fi
 
   echo -ne "${ITERM_SET_TAB}${TAB_TITLE}${ITERM_END}"
@@ -223,5 +435,14 @@ function promptcommand {
 
 PROMPT_COMMAND="promptcommand"
 
-export PS1="\[${ANSIRESET}\]\[${CWD_COLOR}\]\u@\h :\${GITBRANCH} \w \[${ANSIRESET}\]  \[${ANSIRED}\]\${PROMPT_MSG}\[${ANSIRESET}\]\n\[${PROMPT_COLOR}\]${WINDOW_MSG}\t \$ \[${ANSIRESET}\] "
+export PS1="\[${ANSIRESET}\]\[${CWD_COLOR}\]\${WHOAMI} :\${GITBRANCH} \w \[${ANSIRESET}\]  \[${ANSIRED}\]\${PROMPT_MSG}\[${ANSIRESET}\]\n\[${PROMPT_COLOR}\]${WINDOW_MSG}\t \$ \[${ANSIRESET}\] "
 
+#=============================================================================
+#-- RUBY ---------------------------------------------------------------------
+
+if [[ -s "$HOME/.rvm/scripts/rvm" ]]; then
+  . "$HOME/.rvm/scripts/rvm"
+fi
+
+
+PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
