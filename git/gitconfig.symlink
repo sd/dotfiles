@@ -6,16 +6,21 @@
   diff = auto
   status = auto
   branch = auto
+  interactive = true
+  pager = true
+  ui = true
+
+[core]
+  whitespace = tab-in-indent,trailing-space,tabwidth=2
+  quotepath = false
 
 [apply]
   whitespace = nowarn
 
+[rerere]
+  enabled = true
+
 [alias]
-  s = svn
-  sdc = svn dcommit
-  sci = svn dcommit
-  srb = svn rebase
-  sup = svn rebase
   st = status
   ci = commit
   ca = commit -a
@@ -25,8 +30,19 @@
   chpk = cherry-pick 
   lognew = !git fetch --quiet && git log --abbrev-commit --pretty=oneline  ..`git remote`
   logmine = !git log --abbrev-commit --pretty=oneline  `git remote`..
-  get = !echo "PULLING:" && git lognew && git pull --rebase 
+  get = !echo "PULLING:" && git pull --rebase 
   g   = !git get
-  put = !git get && echo "PUSHING:" && git logmine && git push
+  put = !git get && echo "PUSHING:" && git push
   p   = !git put
 
+  # show list of contributors in descending order by number of commits
+  rank = shortlog -sn --no-merges
+
+[github]
+  user = sd
+
+[push]
+  default = current
+
+[pull]
+  rebase = true
