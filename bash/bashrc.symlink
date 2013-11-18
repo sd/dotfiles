@@ -390,7 +390,10 @@ SCREEN_END_TITLE="\033\0134"
 
 #==============================================================================
 #-- Prompt --------------------------------------------------------------------
-if [ "$UID" = "$ORIGINALUID" ]; then
+if [ "$USER" = "vagrant" ]; then
+  CWD_COLOR=$ANSIRED$ANSIBACKYELLOW
+  PROMPT_COLOR=$ANSIRED$ANSIBACKYELLOW
+elif [ "$UID" = "$ORIGINALUID" ]; then
   CWD_COLOR=$ANSIBLACK$ANSIBACKGREEN
   PROMPT_COLOR=$ANSIBLACK$ANSIBACKGREEN
 elif [ "$UID" = "0" ]; then
