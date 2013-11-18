@@ -440,12 +440,11 @@ export PS1="\[${ANSIRESET}\]\[${CWD_COLOR}\]\${WHOAMI} :\${GITBRANCH} \w \[${ANS
 #=============================================================================
 #-- RUBY ---------------------------------------------------------------------
 
-if [[ -s "$HOME/.rvm/scripts/rvm" ]]; then
-  . "$HOME/.rvm/scripts/rvm"
-  PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
-fi
-
 if [[ -s "$HOME/.rbenv" ]]; then
+  PATH=$PATH:$HOME/.rbenv/bin # Add rbenv to PATH for scripting
   eval "$(rbenv init -)"
+elif [[ -s "$HOME/.rvm/scripts/rvm" ]]; then
+  PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+  . "$HOME/.rvm/scripts/rvm"
 fi
 
