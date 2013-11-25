@@ -446,8 +446,12 @@ export PS1="\[${ANSIRESET}\]\[${CWD_COLOR}\]\${WHOAMI} :\${GITBRANCH} \w \[${ANS
 if [[ -s "$HOME/.rbenv" ]]; then
   PATH=$PATH:$HOME/.rbenv/bin # Add rbenv to PATH for scripting
   eval "$(rbenv init -)"
+  echo -n "RBENV: "
+  rbenv version
 elif [[ -s "$HOME/.rvm/scripts/rvm" ]]; then
   PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
   . "$HOME/.rvm/scripts/rvm"
+  echo "RVM: "
+  rvm current
 fi
 
