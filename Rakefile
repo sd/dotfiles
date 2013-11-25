@@ -7,9 +7,9 @@ desc "Only symlink files"
 task :symlinks do
   linkables = Dir.glob('*/**{.symlink}')
 
-  skip_all = false
-  overwrite_all = false
-  backup_all = false
+  skip_all = ENV['SKIP'] || false
+  overwrite_all = ENV['OVERWRITE'] || false
+  backup_all = ENV['BACKUP'] || false
 
   linkables.each do |linkable|
     overwrite = false
