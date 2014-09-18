@@ -152,6 +152,8 @@ alias gcia="git commit -v -a"
 alias gco="git checkout"
 alias gb="git branch"
 
+alias vg="vagrant"
+
 # QuickLook shortcut on Leopard
 if [ "$ENVIRONMENT" = "OSX" ]; then
   alias ql='qlmanage -p "$@" >& /dev/null'
@@ -178,14 +180,10 @@ function bundle_exec {
   fi
 }
 
-alias rake="bundle_exec rake"
-alias cap="bundle_exec cap"
-alias spec="bundle_exec spec"
-
-#==============================================================================
-# StreetEasy specific aliases
-alias securrent="cd /home/app/app/production/current"
-alias seconsole="cd /home/app/app/production/current && ./script/console production"
+alias rake="bundle exec rake"
+alias cap="bundle exec cap"
+alias spec="bundle exec spec"
+alias foreman="bundle exec foreman"
 
 #==============================================================================
 # Based on http://gist.github.com/317004, but renamed as 'cds'
