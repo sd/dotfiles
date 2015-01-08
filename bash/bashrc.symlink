@@ -443,3 +443,9 @@ if [[ -s "/usr/local/heroku" ]]; then
   ### Added by the Heroku Toolbelt
   export PATH="/usr/local/heroku/bin:$PATH"
 fi
+
+
+if [[ -s "/Users/sd/anaconda/bin" ]]; then
+  # Anaconda
+  export PATH="/Users/sd/anaconda/bin:$PATH"
+fi
