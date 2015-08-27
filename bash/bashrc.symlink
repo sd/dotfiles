@@ -173,6 +173,7 @@ alias rake="bundle exec rake"
 alias cap="bundle exec cap"
 alias spec="bundle exec spec"
 alias foreman="bundle exec foreman"
+alias rails="bundle exec rails"
 
 #==============================================================================
 # Docker Tricks
@@ -474,12 +475,51 @@ if [[ -s "/usr/local/heroku" ]]; then
   export PATH="/usr/local/heroku/bin:$PATH"
 fi
 
+#==============================================================================
+# Docker Tricks
+#==============================================================================
+alias d="docker"
+alias dma="docker-machine"
+function dco() {
+  if [ -f "./docker-compose.yml" ]; then
+    docker-compose -f ./docker-compose.yml -p $(basename -- "$(dirname -- "$PWD")") "${@}"
+  elif [ -f "../devenv/docker-compose.yml" ]; then
+    docker-compose -f ../devenv/docker-compose.yml -p $(basename -- "$(dirname -- "$PWD")") "${@}"
+  elif [ -f "./devenv/docker-compose.yml" ]; then
+    docker-compose -f ./devenv/docker-compose.yml -p $(basename -- "$PWD") "${@}"
+  else
+    echo "Could not find a docker-compose.yml file, nor a devenv directory."
+  fi
+}
 
-if [[ -s "/Users/sd/anaconda/bin" ]]; then
-  # Anaconda
-  export PATH="/Users/sd/anaconda/bin:$PATH"
+function dcr() {
+  if [ -f "../devenv/docker-compose.yml" ]; then
+    docker-compose -f ../devenv/docker-compose.yml -p $(basename -- "$(dirname -- "$PWD")") run $(basename $PWD) "${@}"
+  else
+    echo "You can only invoke 'dcr' inside a project subdirectory, next to a 'devenv' directory containing docker-compose.yml"
+  fi
+}
+
+# For docker-compose based projects, with a local rakefile at the root level, and per-service directories where you want to invoke tasks
+function lrake() {
+  if [ -f "./Dockerfile" ]; then
+    DIR=$(basename $PWD)
+    echo "rake --rakefile ../Rakefile ${@} DIR=$DIR"
+    pushd .. >/dev/null
+    rake ${@} DIR=$DIR
+    popd >/dev/null
+  else
+    rake ${@}
+  fi
+}
+
+alias dmenv="eval $(docker-machine env r5)"
+
+#==============================================================================
+# Postgres.app
+#==============================================================================
+
+if [[ -s "/Applications/Postgres.app/Contents/Versions/9.4/bin" ]]; then
+  export PATH=$PATH:/Applications/Postgres.app/Contents/Versions/9.4/bin
 fi
 
-if [[ -s "/usr/local/opt/autoenv" ]]; then
-  source /usr/local/opt/autoenv/activate.sh
-fi
