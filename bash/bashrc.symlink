@@ -479,3 +479,7 @@ if [[ -s "/Users/sd/anaconda/bin" ]]; then
   # Anaconda
   export PATH="/Users/sd/anaconda/bin:$PATH"
 fi
+
+if [[ -s "/usr/local/opt/autoenv" ]]; then
+  source /usr/local/opt/autoenv/activate.sh
+fi
