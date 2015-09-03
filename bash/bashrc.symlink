@@ -332,12 +332,8 @@ function deploy_bashrc_to {
 }
 
 function deploy_bashrc {
-  SITES="home.notso.net arepa.notso.net lacomarca.org"
-  SITES="$SITES chambers.streeteasy.com broadway.streeteasy.com"
-  SITES="$SITES duane.streeteasy.com reade.streeteasy.com"
-  SITES="$SITES bqe.streeteasy.com fdr.streeteasy.com"
-  SITES="$SITES bedford.streeteasy.com ludlow.streeteasy.com"
-  SITES="$SITES lenox.streeteasy.com flatbush.streeteasy.com tremont.streeteasy.com"
+  SITES="home.notso.net"
+  SITES="$SITES arepa.notso.net lacomarca.org"
 
   for SITE in $SITES; do
     deploy_bashrc_to $SITE
