@@ -44,14 +44,14 @@ if [ "$ENVIRONMENT" = "" ]; then
     fi
   elif [ "$OSTYPE" = "linux-gnu" ]; then
     export ENVIRONMENT="Linux"
-  
+
     export PATH=/usr/bin:/bin:/usr/sbin:/sbin:~/bin
   elif [ "$OSTYPE" = "solaris2.9" ]; then
-    export ENVIRONMENT="Solaris" 
+    export ENVIRONMENT="Solaris"
 
   elif [ "$OSTYPE" = "cygwin" ]; then
     export ENVIRONMENT="Win32 Cygwin"
-  else 
+  else
     export ENVIRONMENT="Unknown"
   fi
 fi
@@ -173,6 +173,44 @@ alias rake="bundle exec rake"
 alias cap="bundle exec cap"
 alias spec="bundle exec spec"
 alias foreman="bundle exec foreman"
+
+#==============================================================================
+# Docker Tricks
+#==============================================================================
+alias dinit="$(boot2docker shellinit)"
+alias d="docker"
+function dco() {
+  if [ -f "./docker-compose.yml" ]; then
+    docker-compose -f ./docker-compose.yml -p $(basename -- "$(dirname -- "$PWD")") "${@}"
+  elif [ -f "../devenv/docker-compose.yml" ]; then
+    docker-compose -f ../devenv/docker-compose.yml -p $(basename -- "$(dirname -- "$PWD")") "${@}"
+  elif [ -f "./devenv/docker-compose.yml" ]; then
+    docker-compose -f ./devenv/docker-compose.yml -p $(basename -- "$PWD") "${@}"
+  else
+    echo "Could not find a docker-compose.yml file, nor a devenv directory."
+  fi
+}
+
+function dcr() {
+  if [ -f "../devenv/docker-compose.yml" ]; then
+    docker-compose -f ../devenv/docker-compose.yml -p $(basename -- "$(dirname -- "$PWD")") run $(basename $PWD) "${@}"
+  else
+    echo "You can only invoke 'dcr' inside a project subdirectory, next to a 'devenv' directory containing docker-compose.yml"
+  fi
+}
+
+# For docker-compose based projects, with a local rakefile at the root level, and per-service directories where you want to invoke tasks
+function lrake() {
+  if [ -f "./Dockerfile" ]; then
+    DIR=$(basename $PWD)
+    echo "rake --rakefile ../Rakefile ${@} DIR=$DIR"
+    pushd .. >/dev/null
+    rake ${@} DIR=$DIR
+    popd >/dev/null
+  else
+    rake ${@}
+  fi
+}
 
 #==============================================================================
 # Based on http://gist.github.com/317004, but renamed as 'cds'
@@ -386,7 +424,7 @@ elif [ "$UID" = "$ORIGINALUID" ]; then
 elif [ "$UID" = "0" ]; then
   CWD_COLOR=$ANSIYELLOW$ANSIBACKRED
   PROMPT_COLOR=$ANSIYELLOW$ANSIBACKRED
-else 
+else
   CWD_COLOR=$ANSIRED$ANSIBACKYELLOW
   PROMPT_COLOR=$ANSIRED$ANSIBACKYELLOW
 fi
