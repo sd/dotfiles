@@ -528,4 +528,4 @@ fi
 #==============================================================================
 if [[ -s "/usr/local/opt/autoenv/activate.sh" ]]; then
   source /usr/local/opt/autoenv/activate.sh
-end
+fi
