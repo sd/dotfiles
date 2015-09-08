@@ -523,3 +523,9 @@ if [[ -s "/Applications/Postgres.app/Contents/Versions/9.4/bin" ]]; then
   export PATH=$PATH:/Applications/Postgres.app/Contents/Versions/9.4/bin
 fi
 
+#==============================================================================
+# Autoenv
+#==============================================================================
+if [[ -s "/usr/local/opt/autoenv/activate.sh" ]]; then
+  source /usr/local/opt/autoenv/activate.sh
+end
