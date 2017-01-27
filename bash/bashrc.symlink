@@ -478,3 +478,6 @@ fi
 #==============================================================================
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_rsa
+
+# added by travis gem
+[ -f /Users/sd/.travis/travis.sh ] && source /Users/sd/.travis/travis.sh
