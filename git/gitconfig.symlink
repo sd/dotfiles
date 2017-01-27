@@ -8,11 +8,12 @@
   branch = auto
   interactive = true
   pager = true
-  ui = true
+	ui = auto
 
 [core]
   whitespace = tab-in-indent,trailing-space,tabwidth=2
   quotepath = false
+
 
 [apply]
   whitespace = nowarn
@@ -54,3 +55,6 @@
 	clean = git-lfs clean %f
 	smudge = git-lfs smudge %f
 	required = true
+
+[diff]
+	compactionHeuristic = yes
