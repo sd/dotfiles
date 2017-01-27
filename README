@@ -25,3 +25,8 @@ You can put it anywhere. I like to have in my Dropbox folder, so that if I ever 
 
 The main file you'll want to change right off the bat is `bash/bashrc.symlink`, which sets up a few paths that'll be different on your particular machine.
 
+
+
+## Z Shell notes
+
+http://sourabhbajaj.com/mac-setup/iTerm/zsh.html
