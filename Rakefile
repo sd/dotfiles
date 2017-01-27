@@ -5,7 +5,7 @@ task :default => :symlinks
 
 desc "Only symlink files"
 task :symlinks do
-  linkables = Dir.glob('*/**{.symlink}')
+  linkables = Dir.glob('*/**{.symlink}') + Dir.glob('*/dot-**')
 
   skip_all = ENV['SKIP'] || false
   overwrite_all = ENV['OVERWRITE'] || false
@@ -15,7 +15,7 @@ task :symlinks do
     overwrite = false
     backup = false
 
-    file = linkable.split('/').last.split('.').first
+    file = linkable.split('/').last.gsub(/\.symlink$/, "").gsub(/^dot-/, "")
     target = "#{ENV["HOME"]}/.#{file}"
 
     if File.exists?(target) || File.symlink?(target)
