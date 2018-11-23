@@ -1,0 +1,63 @@
+require 'rubygems'
+
+# For ANSI colored prompt and multiple lines, make sure your ruby uses the readline library
+
+# brew install readline
+# CONFIGURE_OPTS=--with-readline-dir=`brew --prefix readline` rbenv install 2.5.1
+
+
+if !defined? ANSI_BLACK
+  ANSI_BLACK        = "\001\e[0;30m\002"
+  ANSI_GRAY         = "\001\e[1;30m\002"
+  ANSI_LGRAY        = "\001\e[0;37m\002"
+  ANSI_WHITE        = "\001\e[1;37m\002"
+  ANSI_RED          = "\001\e[0;31m\002"
+  ANSI_LRED         = "\001\e[1;31m\002"
+  ANSI_GREEN        = "\001\e[0;32m\002"
+  ANSI_LGREEN       = "\001\e[1;32m\002"
+  ANSI_BROWN        = "\001\e[0;33m\002"
+  ANSI_YELLOW       = "\001\e[1;33m\002"
+  ANSI_BLUE         = "\001\e[0;34m\002"
+  ANSI_LBLUE        = "\001\e[1;34m\002"
+  ANSI_PURPLE       = "\001\e[0;35m\002"
+  ANSI_LPURPLE      = "\001\e[1;35m\002"
+  ANSI_CYAN         = "\001\e[0;36m\002"
+  ANSI_LCYAN        = "\001\e[1;36m\002"
+
+  ANSI_BACKBLACK    = "\001\e[40m\002"
+  ANSI_BACKRED      = "\001\e[41m\002"
+  ANSI_BACKGREEN    = "\001\e[42m\002"
+  ANSI_BACKYELLOW   = "\001\e[43m\002"
+  ANSI_BACKBLUE     = "\001\e[44m\002"
+  ANSI_BACKPURPLE   = "\001\e[45m\002"
+  ANSI_BACKCYAN     = "\001\e[46m\002"
+  ANSI_BACKGRAY     = "\001\e[47m\002"
+
+  ANSI_RESET        = "\001\e[0m\002"
+  ANSI_BOLD         = "\001\e[1m\002"
+  ANSI_UNDERSCORE   = "\001\e[4m\002"
+  ANSI_BLINK        = "\001\e[5m\002"
+  ANSI_REVERSE      = "\001\e[7m\002"
+  ANSI_CONCEALED    = "\001\e[8m\002"
+
+  XTERM_SET_TITLE   = "\001\e]2;\002"
+  XTERM_END         = "\001\007\002"
+  ITERM_SET_TAB     = "\001\e]1;\002"
+  ITERM_END         = "\001\007\002"
+  SCREEN_SET_STATUS = "\001\e]0;\002"
+  SCREEN_END        = "\001\007\002"
+end
+
+if ENV['RAILS_ENV']
+  prompt_name = "rails #{ENV['RAILS_ENV']}"
+  prompt_colors = ANSI_BACKBLUE + ANSI_YELLOW
+else
+  prompt_name = "ruby"
+  prompt_colors = ANSI_BACKPURPLE + ANSI_YELLOW
+end
+
+
+Pry.config.prompt = [
+  proc { |obj, nest_level| "#{prompt_colors}#{prompt_name} (#{obj}):#{nest_level} > #{ANSI_RESET} " },
+  proc { |obj, nest_level| "#{prompt_colors} ≫ #{ANSI_RESET} " }
+]
