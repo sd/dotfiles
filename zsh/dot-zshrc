@@ -1,7 +1,12 @@
+
+#==================================================================================================
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 
+#==================================================================================================
+# OH MY ZSH
+#==================================================================================================
 # Path to your oh-my-zsh installation.
 export ZSH=/Users/sd/.oh-my-zsh
 
@@ -12,6 +17,7 @@ ZSH_THEME="powerlevel9k/powerlevel9k"
 
 # PowerLevel 9k: https://github.com/bhilburn/powerlevel9k#prompt-customization
 DEFAULT_USER=sd
+POWERLEVEL9K_MODE='nerdfont-complete'
 POWERLEVEL9K_PROMPT_ON_NEWLINE=true
 POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX=""
 POWERLEVEL9K_MULTILINE_SECOND_PROMPT_PREFIX="$ "
@@ -47,46 +53,67 @@ COMPLETION_WAITING_DOTS="true"
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
-
-
 plugins=(autoenv common-aliases docker emoji git node rails rbenv ruby ssh-agent)
-
 source $ZSH/oh-my-zsh.sh
 
+#==================================================================================================
 # User configuration
+#==================================================================================================
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
 export LANG=en_US.UTF-8
 export EDITOR='nano'
-export SSH_KEY_PATH="~/.ssh/id_rsa"
 
 # Mac Alt-arrow keys
 bindkey "^[^[[C" forward-word
 bindkey "^[^[[D" backward-word
 
+#==================================================================================================
 # SSH Agent
+#==================================================================================================
+export SSH_KEY_PATH="~/.ssh/id_rsa"
 zstyle :omz:plugins:ssh-agent identities id_rsa
 
+#==================================================================================================
 # Custom aliases
+#==================================================================================================
 alias zshrc='atom ~/.zshrc' # we don't use $EDITOR for this
 alias omz='atom ~/.oh-my-zsh' # we don't use $EDITOR for this
 
-alias psg="(ps auxwww | head -1) && ps auxwww | grep -v grep | grep -i"
-alias ducks="du -cks * |sort -rn |head -11"
+alias psg='(ps auxwww | head -1) && ps auxwww | grep -v grep | grep -i'
+alias ducks='du -cks * |sort -rn |head -11'
+
+alias g='git'
 
 alias rn='react-native'
 
+alias d='docker'
+alias dco='docker-compose'
+alias dcr='docker-compose run -e TERM=$TERM ${DOCKER_COMPOSE_DEFAULT_SERVICE:-$(basename $PWD)} "${@}"'
+
+alias dcsh='docker-compose run -v ~/.docker_bash:/app/.bash_profile -e TERM=$TERM ${DOCKER_COMPOSE_DEFAULT_SERVICE:-$(basename $PWD)} bash --init-file /app/.bash_profile "${@}"'
+
+#==================================================================================================
 # Android Tools
+#==================================================================================================
 export ANDROID_HOME=${HOME}/Library/Android/sdk
 export PATH=${PATH}:${ANDROID_HOME}/tools
 export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 
-
-
-
+#==================================================================================================
+# Node Tools
+#==================================================================================================
 NVM_DIR="$HOME/.nvm"
 source "/usr/local/opt/nvm/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-export PATH=${PATH}:/Applications/Postgres.app/Contents/Versions/latest/bin
+#==================================================================================================
+
+[ -s "/Applications/Postgres.app/Contents/Versions/latest/bin" ] && export PATH=${PATH}:/Applications/Postgres.app/Contents/Versions/latest/bin
+
+
+#==================================================================================================
+if [[ -a ~/.zshrc-local ]]; then
+  source ~/.zshrc-local
+fi
