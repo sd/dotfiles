@@ -117,3 +117,6 @@ source "/usr/local/opt/nvm/nvm.sh"
 if [[ -a ~/.zshrc-local ]]; then
   source ~/.zshrc-local
 fi
+
+test -e "${HOME}/.zsh/iterm2_shell_integration.zsh" && source "${HOME}/.zsh/iterm2_shell_integration.zsh" || true
+
