@@ -1,122 +1,394 @@
+#==================================================================================================
+# Links
+#==================================================================================================
+#
+# https://scriptingosx.com/2019/06/moving-to-zsh/
+#
 
 #==================================================================================================
-# If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:/usr/local/bin:$PATH
-
-
+# ENVIRONMENT & PATHS
 #==================================================================================================
-# OH MY ZSH
-#==================================================================================================
-# Path to your oh-my-zsh installation.
-export ZSH=/Users/sd/.oh-my-zsh
-
-# Set name of the theme to load. Optionally, if you set this to "random"
-# it'll load a random theme each time that oh-my-zsh is loaded.
-# See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="powerlevel9k/powerlevel9k"
-
-# PowerLevel 9k: https://github.com/bhilburn/powerlevel9k#prompt-customization
-DEFAULT_USER=sd
-POWERLEVEL9K_MODE='nerdfont-complete'
-POWERLEVEL9K_PROMPT_ON_NEWLINE=true
-POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX=""
-POWERLEVEL9K_MULTILINE_SECOND_PROMPT_PREFIX="$ "
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(time context root_indicator dir vcs status)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(background_jobs rbenv nvm)
-
-# Uncomment the following line to use hyphen-insensitive completion. Case
-# sensitive completion must be off. _ and - will be interchangeable.
-HYPHEN_INSENSITIVE="true"
-
-# Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
-
-# Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
-
-# Uncomment the following line to enable command auto-correction.
-ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# HIST_STAMPS="mm/dd/yyyy"
-
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-plugins=(autoenv common-aliases docker emoji git node rails rbenv ruby ssh-agent)
-source $ZSH/oh-my-zsh.sh
-
-#==================================================================================================
-# User configuration
-#==================================================================================================
-
-# export MANPATH="/usr/local/man:$MANPATH"
 
 export LANG=en_US.UTF-8
-export EDITOR='nano'
+export LC_ALL=en_US.UTF-8
 
-# Mac Alt-arrow keys
-bindkey "^[^[[C" forward-word
-bindkey "^[^[[D" backward-word
+if [[ "$ENVIRONMENT" = "" ]]; then
+  if [[ $(uname) = Darwin ]]; then
+    export ENVIRONMENT="OSX"
+
+    export PATH=/usr/bin:/bin:/usr/sbin:/sbin
+
+    if [[ -d /opt/homebrew/bin ]]; then
+      export PATH=/opt/homebrew/bin:/opt/homebrew/sbin:$PATH
+    fi
+
+  elif [[ "$OSTYPE" = "linux-gnu" ]]; then
+    export ENVIRONMENT="Linux"
+
+    export PATH=/usr/bin:/bin:/usr/sbin:/sbin
+  else
+    export ENVIRONMENT="Unknown"
+  fi
+fi
+
+export PATH=$HOME/bin:$HOME/.bin:/usr/local/bin:/usr/local/sbin:$PATH
+
+#==================================================================================================
+# ZSH Settings
+#==================================================================================================
+autoload -Uz compinit && compinit
+
+# HYPHEN_INSENSITIVE="true"
+
+# COMPLETION_WAITING_DOTS="true"
+
+# # Uncomment the following line if you want to disable marking untracked files
+# # under VCS as dirty. This makes repository status check for large repositories
+# # much, much faster.
+# DISABLE_UNTRACKED_FILES_DIRTY="true"
+
+# No autocorrection
+unsetopt CORRECT
+unsetopt CORRECT_ALL
+
+# case insensitive path-completion
+zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} l:|=* r:|=*' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} l:|=* r:|=*' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} l:|=* r:|=*'
+setopt NO_CASE_GLOB
+
+# partial completion suggestions
+zstyle ':completion:*' list-suffixeszstyle ':completion:*' expand prefix suffix
+
+# Shell history
+HISTFILE=$HOME/.zsh_history
+setopt EXTENDED_HISTORY
+# share history across multiple zsh sessions
+setopt SHARE_HISTORY
+# append to history
+setopt APPEND_HISTORY
+# expire duplicates first
+setopt HIST_EXPIRE_DUPS_FIRST
+# do not store duplications
+setopt HIST_IGNORE_DUPS
+#ignore duplicates when searching
+setopt HIST_FIND_NO_DUPS
+# removes blank lines from history
+setopt HIST_REDUCE_BLANKS
+# adds commands as they are typed, not at shell exit
+#setopt INC_APPEND_HISTORY
+HISTSIZE=1000
+
+#==================================================================================================
+# Starship Prompt
+#==================================================================================================
+export STARSHIP_CONFIG=~/.starship.toml
+eval "$(starship init zsh)"
 
 #==================================================================================================
 # SSH Agent
 #==================================================================================================
 export SSH_KEY_PATH="~/.ssh/id_rsa"
 zstyle :omz:plugins:ssh-agent identities id_rsa
+zstyle :omz:plugins:ssh-agent agent-forwarding on
+zstyle :omz:plugins:ssh-agent lifetime 4h
 
 #==================================================================================================
-# Custom aliases
+# Editors & Programs
 #==================================================================================================
-alias zshrc='atom ~/.zshrc' # we don't use $EDITOR for this
-alias omz='atom ~/.oh-my-zsh' # we don't use $EDITOR for this
+if [[ -f /usr/bin/nano ]]; then
+  export EDITOR="/usr/bin/nano -w"
+elif [[ -f /usr/local/bin/nano ]]; then
+  export EDITOR="/usr/local/bin/nano -w"
+elif [[ -f /opt/homebrew/bin/nano ]]; then
+  export EDITOR="/opt/homebrew/bin/nano -w"
+elif [[ -f /usr/bin/pico ]]; then
+  export EDITOR="/usr/bin/pico -w"
+elif [[ -f /usr/local/bin/pico ]]; then
+  export EDITOR="/usr/local/bin/pico -w"
+elif [[ -f /opt/homebrew/bin/pico ]]; then
+  export EDITOR="/opt/homebrew/bin/pico -w"
+fi
 
-alias psg='(ps auxwww | head -1) && ps auxwww | grep -v grep | grep -i'
-alias ducks='du -cks * |sort -rn |head -11'
+export LESS="--quit-at-eof --ignore-case --RAW-CONTROL-CHARS"
+export MORE="$LESS"
 
-alias g='git'
+#==================================================================================================
+# Shell
+#==================================================================================================
+alias more=less
+alias e="$EDITOR"
 
-alias rn='react-native'
+alias l="ls -lh"
+alias la="ls -lha"
+if [[ "$ENVIRONMENT" = "Linux" ]]; then
+  alias ls="ls --color=tty -ACFh"
+elif [[ "$ENVIRONMENT" = "OSX" ]]; then
+  alias ls="ls -ACFGh -w"
+fi
 
+alias s="screen -xRRU"
+alias t="tail -f $1|more"
+
+alias psg="(ps auxwww | head -1) && ps auxwww | grep -v grep | grep -i"
+alias ducks="du -cks * |sort -rn |head -11"
+
+export LSCOLORS=Dxfxcxdxbxegedabagacad
+# dir, link, socket, pipe, exec, block special, char special, suid, sgid, sticky, writtable
+# defaults to exfxcxdxbxegedabagacad
+
+alias reload="source ~/.zshrc"
+
+#==================================================================================================
+# Git
+#==================================================================================================
+alias g="git"
+alias gs="git status"
+alias gci="git commit -v"
+alias gcia="git commit -v -a"
+alias gco="git checkout"
+alias gb="git branch"
+
+#==================================================================================================
+# Ruby
+#==================================================================================================
+if [[ -d /opt/homebrew/opt/openssl@1.1/bin ]]; then
+  export RUBY_CONFIGURE_OPTS="--with-openssl-dir=`brew --prefix openssl@1.1`"
+  export RUBY_CFLAGS="-Wno-error=implicit-function-declaration"
+fi
+
+function bundle_exec {
+  if [[ -a Gemfile ]]; then
+    bundle exec $*
+  else
+    $*
+  fi
+}
+
+alias rake="bundle_exec rake"
+# alias foreman="bundle exec foreman"
+alias rails="bundle_exec rails"
+
+alias r='bundle_exec rails'
+alias rk='bundle_exec rake'
+# alias r='rails'
+# alias rk="rake"
+
+# if [[ -e /opt/homebrew/bin/rbenv ]]; then
+#   eval "$(rbenv init -)"
+# fi
+
+
+#==================================================================================================
+# macOS
+#==================================================================================================
+if [[ "$ENVIRONMENT" = "OSX" ]]; then
+  # QuickLook shortcut on Leopard
+  alias ql='qlmanage -p "$@" >& /dev/null'
+
+  # Mac Alt-arrow keys
+  bindkey "^[^[[C" forward-word
+  bindkey "^[^[[D" backward-word
+  export WORDCHARS="*?_-.[]~=&;!#$%^(){}<>"   # exclude '/'
+fi
+
+
+#==================================================================================================
+# Docker
+#==================================================================================================
 alias d='docker'
 alias dco='docker-compose'
 alias dcr='docker-compose run -e TERM=$TERM ${DOCKER_COMPOSE_DEFAULT_SERVICE:-$(basename $PWD)} "${@}"'
 
 alias dcsh='docker-compose run -v ~/.docker_bash:/app/.bash_profile -e TERM=$TERM ${DOCKER_COMPOSE_DEFAULT_SERVICE:-$(basename $PWD)} bash --init-file /app/.bash_profile "${@}"'
 
-#==================================================================================================
-# Android Tools
-#==================================================================================================
-export ANDROID_HOME=${HOME}/Library/Android/sdk
-export PATH=${PATH}:${ANDROID_HOME}/tools
-export PATH=${PATH}:${ANDROID_HOME}/platform-tools
+alias dsync='docker-sync clean; docker-sync start'
 
 #==================================================================================================
-# Node Tools
+# Java
 #==================================================================================================
-NVM_DIR="$HOME/.nvm"
-source "/usr/local/opt/nvm/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+if [[ -d /Library/Java/JavaVirtualMachines/zulu-21.jdk/ ]]; then
+  export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-21.jdk/Contents/Home
+fi
 
 #==================================================================================================
+# Android
+#==================================================================================================
+if [[ -d ${HOME}/Library/Android/sdk ]]; then
+  export ANDROID_HOME=${HOME}/Library/Android/sdk
+  export PATH=${PATH}:${ANDROID_HOME}/emulator
+  export PATH=${PATH}:${ANDROID_HOME}/tools
+  export PATH=${PATH}:${ANDROID_HOME}/platform-tools
+fi
 
-[ -s "/Applications/Postgres.app/Contents/Versions/latest/bin" ] && export PATH=${PATH}:/Applications/Postgres.app/Contents/Versions/latest/bin
+#==================================================================================================
+# Rust
+#==================================================================================================
+if [[ -d $HOME/.cargo/bin ]]; then
+  export PATH="$HOME/.cargo/bin:$PATH"
+fi
 
+#==================================================================================================
+# Javascript / Node
+#==================================================================================================
+if [[ -f /usr/local/opt/nvm/nvm.sh ]]; then
+  NVM_DIR="$HOME/.nvm"
+  . /usr/local/opt/nvm/nvm.sh
+  # NVM_INIT=/usr/local/opt/nvm/nvm.sh
+  # alias nvm='unalias nvm node npm npx yarn && . $NVM_INIT && nvm'
+  # alias node='unalias nvm node npm npx yarn && . $NVM_INIT && node'
+  # alias npm='unalias nvm node npm npx yarn && . $NVM_INIT && npm'
+  # alias npx='unalias nvm node npm npx yarn && . $NVM_INIT && npx'
+  # alias yarn='unalias nvm node npm npx yarn && . $NVM_INIT && yarn'
+elif [[ -f /opt/homebrew/opt/nvm/nvm.sh ]]; then
+  NVM_DIR="$HOME/.nvm"
+  . /opt/homebrew/opt/nvm/nvm.sh
+  . /opt/homebrew/opt/nvm/etc/bash_completion.d/nvm
+elif [[ -f $HOME/.nvm/nvm.sh ]]; then
+  NVM_DIR="$HOME/.nvm"
+  . $HOME/.nvm/nvm.sh
+  . $HOME/.nvm/bash_completion
+fi
+
+if [[ -d $HOME/.yarn/bin ]]; then
+  export PATH="$HOME/.yarn/bin:$PATH"
+fi
+
+if [[ -d $HOME/.config/yarn/global/node_modules/.bin ]]; then
+  export PATH="$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+fi
+
+alias n='npm'
+
+#==================================================================================================
+# Other Tools
+#==================================================================================================
+# Postgres
+if [[ -d "/Applications/Postgres.app/Contents/Versions/latest/bin" ]]; then
+  export PATH=${PATH}:/Applications/Postgres.app/Contents/Versions/latest/bin
+fi
+
+#==================================================================================================
+# Context
+#==================================================================================================
+export SD_PROMPT_PREFIX=""
+export SD_TITLE_PREFIX=""
+if [[ "$SD_CONTEXT" == "CT" ]]; then
+  export SD_PROMPT_PREFIX="💼 "
+  export SD_TITLE_PREFIX="💼 "
+fi
+
+#==================================================================================================
+# Prompt
+#==================================================================================================
+# Colors https://jonasjacek.github.io/colors/
+# Styles http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html#Visual-effects
+
+XTERM_SET_TITLE="\033]2;"
+XTERM_END="\007"
+ITERM_SET_TAB="\033]1;"
+ITERM_END="\007"
+SCREEN_SET_STATUS="\033]0;"
+SCREEN_END="\007"
+SCREEN_SET_TITLE="\033k"
+SCREEN_END_TITLE="\033\0134"
+
+# fontconfig with awesome-font required! See
+# https://github.com/gabrielelana/awesome-terminal-fonts
+
+# LEFT_SEGMENT_SEPARATOR=$'\uE0B0'    # 
+# LEFT_SUBSEGMENT_SEPARATOR=$'\uE0B1' # 
+# RUBY_ICON=$'\uF219 '       # 
+# ROOT_ICON=$'\uE801'        # 
+# SUDO_ICON=$'\uF09C'        # 
+# OK_ICON=$'\u2714'          # ✔
+# FAIL_ICON=$'\u2718'        # ✘
+# NODE_ICON=$'\u2B22'        # ⬢
+# HOME_ICON=$'\uF015'        # 
+# HOME_SUB_ICON=$'\uF07C '    # 
+# FOLDER_ICON=$'\uF115'      # 
+# VCS_BRANCH_ICON=$'\uF126' # 
+# TIME_ICON=$'\uF017'        # 
+
+# THEME_PROMPT_COLOR='214' # Orange1
+# THEME_PATH_COLOR='153' # SkyBlue1
+# THEME_GIT_COLOR='67' # SteelBlue
+
+# if [ "$UID" = "0" ]; then
+#   THEME_PROMPT_COLOR='215' # Orange3
+# fi
+
+
+# function process_prompt {
+#   WHOAMI="${SD_PROMPT_PREFIX}$(whoami)@$(hostname -s)"
+#   CURRENT_DIR="$(print -rD $PWD)"
+#   GIT_BRANCH="$(git branch --show-current 2> /dev/null)"
+
+#   # XTERM_TITLE="${WHOAMI} : `pwd`"
+#   XTERM_TITLE="${CURRENT_DIR}"
+#   echo -ne "${XTERM_SET_TITLE}${SD_TITLE_PREFIX}${XTERM_TITLE}${XTERM_END}"
+
+#   if [ "$TAB" != "" ]; then
+#     TAB_TITLE="$TAB"
+#   else
+#     TAB_TITLE="${XTERM_TITLE}"
+#   fi
+
+#   echo -ne "${ITERM_SET_TAB}${SD_TITLE_PREFIX}${TAB_TITLE}${ITERM_END}"
+
+#   SEGMENTS="
+# "
+
+#   # Who Am I
+#   BGCOLOR=$THEME_PROMPT_COLOR
+#   FGCOLOR='black'
+
+#   SEGMENTS="${SEGMENTS}%F{${FGCOLOR}}%K{${BGCOLOR}} ${WHOAMI:l} "
+
+#   # Current Directory
+#   PREV_BGCOLOR=$BGCOLOR
+#   PREV_FGCOLOR=$FGCOLOR
+#   BGCOLOR=$THEME_PATH_COLOR
+
+#   SEGMENTS="${SEGMENTS}%F{${PREV_BGCOLOR}}%K{${BGCOLOR}}${LEFT_SEGMENT_SEPARATOR}%F{${FGCOLOR}}"
+#   SEGMENTS="${SEGMENTS} ${HOME_SUB_ICON} ${CURRENT_DIR} "
+
+#   if [[ ! -z ${GIT_BRANCH} ]]; then
+#     # Git Branch
+#     PREV_BGCOLOR=$BGCOLOR
+#     PREV_FGCOLOR=$FGCOLOR
+#     BGCOLOR=$THEME_GIT_COLOR
+
+#     SEGMENTS="${SEGMENTS}%F{${PREV_BGCOLOR}}%K{${BGCOLOR}}${LEFT_SEGMENT_SEPARATOR}%F{${FGCOLOR}}"
+#     SEGMENTS="${SEGMENTS} ${VCS_BRANCH_ICON} ${GIT_BRANCH} "
+#   fi
+
+#   # Final version of prompt
+#   export PS1='${SEGMENTS}%F{${BGCOLOR}}%k${LEFT_SEGMENT_SEPARATOR}%f%E
+# %B%F{${THEME_PROMPT_COLOR}}%k%(?. $OK_ICON.%K{red} $FAIL_ICON %? %k) %D{%I:%M:%S} $%b%f%k%E '
+# }
+
+# setopt prompt_subst
+# precmd_functions=(process_prompt)
+# export PS1='%B%F${THEME_PROMPT_COLOR} %D{%I:%M:%S} $%b%f%k%E '
 
 #==================================================================================================
 if [[ -a ~/.zshrc-local ]]; then
   source ~/.zshrc-local
 fi
 
+
+
 test -e "${HOME}/.zsh/iterm2_shell_integration.zsh" && source "${HOME}/.zsh/iterm2_shell_integration.zsh" || true
 
+
+export STM32_PRG_PATH=/Applications/STMicroelectronics/STM32Cube/STM32CubeProgrammer/STM32CubeProgrammer.app/Contents/MacOs/bin
+
+
+#==================================================================================================
+# Mise should be activated at the very end. It hooks into prompt variables so it should come after any change to these.
+if [[ -e /opt/homebrew/bin/mise ]]; then
+  # if [[ "$TERM_PROGRAM" == "vscode" ]]; then
+  #   eval "$(/opt/homebrew/bin/mise activate zsh --shims)"
+  # else
+    eval "$(/opt/homebrew/bin/mise activate zsh)"
+  # fi
+fi

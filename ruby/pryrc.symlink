@@ -1,5 +1,7 @@
 require 'rubygems'
 
+Pry.config.pager = false
+
 # For ANSI colored prompt and multiple lines, make sure your ruby uses the readline library
 
 # brew install readline
@@ -56,8 +58,18 @@ else
   prompt_colors = ANSI_BACKPURPLE + ANSI_YELLOW
 end
 
-
-Pry.config.prompt = [
-  proc { |obj, nest_level| "#{prompt_colors}#{prompt_name} (#{obj}):#{nest_level} > #{ANSI_RESET} " },
-  proc { |obj, nest_level| "#{prompt_colors} ≫ #{ANSI_RESET} " }
-]
+# if Pry::Prompt.respond_to?(:new)
+#   Pry.config.prompt = Pry::Prompt.new(
+#     "sd",
+#     "@sd custom prompt",
+#     [
+#       proc { |obj, nest_level| "#{prompt_colors}#{prompt_name} (#{obj}):#{nest_level} > #{ANSI_RESET} " },
+#       proc { |_obj, _nest_level| "#{prompt_colors} ≫ #{ANSI_RESET} " }
+#     ]
+#   )
+# else
+#   Pry.config.prompt = [
+#     proc { |obj, nest_level| "#{prompt_colors}#{prompt_name} (#{obj}):#{nest_level} > #{ANSI_RESET} " },
+#     proc { |_obj, _nest_level| "#{prompt_colors} ≫ #{ANSI_RESET} " }
+#   ]
+# end

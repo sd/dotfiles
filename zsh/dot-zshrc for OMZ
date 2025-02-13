@@ -1,0 +1,141 @@
+
+#==================================================================================================
+# If you come from bash you might have to change your $PATH.
+export PATH=$HOME/bin:/usr/local/bin:$PATH
+
+export LANG=en_US.UTF-8
+
+
+#==================================================================================================
+# OH MY ZSH
+#==================================================================================================
+# Path to your oh-my-zsh installation.
+export ZSH=/Users/sd/.oh-my-zsh
+
+# Set name of the theme to load. Optionally, if you set this to "random"
+# it'll load a random theme each time that oh-my-zsh is loaded.
+# See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
+# ZSH_THEME="powerlevel9k/powerlevel9k"
+
+# PowerLevel 9k: https://github.com/bhilburn/powerlevel9k#prompt-customization
+# DEFAULT_USER=sd
+# POWERLEVEL9K_MODE='nerdfont-complete'
+# POWERLEVEL9K_PROMPT_ON_NEWLINE=true
+# POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX=""
+# POWERLEVEL9K_MULTILINE_SECOND_PROMPT_PREFIX="$ "
+# POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(time context root_indicator dir vcs status)
+# POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(background_jobs rbenv nvm)
+
+# Uncomment the following line to use hyphen-insensitive completion. Case
+# sensitive completion must be off. _ and - will be interchangeable.
+HYPHEN_INSENSITIVE="true"
+
+# Uncomment the following line to disable bi-weekly auto-update checks.
+# DISABLE_AUTO_UPDATE="true"
+
+# Uncomment the following line to change how often to auto-update (in days).
+# export UPDATE_ZSH_DAYS=13
+
+# Uncomment the following line to enable command auto-correction.
+ENABLE_CORRECTION="false"
+
+# Uncomment the following line to display red dots whilst waiting for completion.
+COMPLETION_WAITING_DOTS="true"
+
+# Uncomment the following line if you want to disable marking untracked files
+# under VCS as dirty. This makes repository status check for large repositories
+# much, much faster.
+DISABLE_UNTRACKED_FILES_DIRTY="true"
+
+# Uncomment the following line if you want to change the command execution time
+# stamp shown in the history command output.
+# The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
+# HIST_STAMPS="mm/dd/yyyy"
+
+# Would you like to use another custom folder than $ZSH/custom?
+# ZSH_CUSTOM=/path/to/new-custom-folder
+
+#==================================================================================================
+# SSH Agent
+#==================================================================================================
+export SSH_KEY_PATH="~/.ssh/id_rsa"
+zstyle :omz:plugins:ssh-agent identities id_rsa
+zstyle :omz:plugins:ssh-agent agent-forwarding on
+zstyle :omz:plugins:ssh-agent lifetime 4h
+
+#==================================================================================================
+# Load OH-MY-ZSH
+#==================================================================================================
+plugins=(autoenv common-aliases emoji ssh-agent ) # git node rbenv ruby )
+source $ZSH/oh-my-zsh.sh
+
+eval "$(starship init zsh)"
+
+
+#==================================================================================================
+# User configuration
+#==================================================================================================
+
+# export MANPATH="/usr/local/man:$MANPATH"
+
+export EDITOR='nano'
+
+# Mac Alt-arrow keys
+bindkey "^[^[[C" forward-word
+bindkey "^[^[[D" backward-word
+
+#==================================================================================================
+# Custom aliases
+#==================================================================================================
+alias zshrc='atom ~/.zshrc' # we don't use $EDITOR for this
+alias omz='atom ~/.oh-my-zsh' # we don't use $EDITOR for this
+
+alias psg='(ps auxwww | head -1) && ps auxwww | grep -v grep | grep -i'
+alias ducks='du -cks * |sort -rn |head -11'
+
+alias g='git'
+
+alias r='bundle exec rails'
+
+alias sr='spring rails'
+
+alias rn='react-native'
+
+alias d='docker'
+alias dco='docker-compose'
+alias dcr='docker-compose run -e TERM=$TERM ${DOCKER_COMPOSE_DEFAULT_SERVICE:-$(basename $PWD)} "${@}"'
+
+alias dcsh='docker-compose run -v ~/.docker_bash:/app/.bash_profile -e TERM=$TERM ${DOCKER_COMPOSE_DEFAULT_SERVICE:-$(basename $PWD)} bash --init-file /app/.bash_profile "${@}"'
+
+alias dsync='docker-sync clean; docker-sync start'
+
+#==================================================================================================
+# Android Tools
+#==================================================================================================
+export ANDROID_HOME=${HOME}/Library/Android/sdk
+export PATH=${PATH}:${ANDROID_HOME}/tools
+export PATH=${PATH}:${ANDROID_HOME}/platform-tools
+
+#==================================================================================================
+# Node Tools
+#==================================================================================================
+NVM_DIR="$HOME/.nvm"
+source "/usr/local/opt/nvm/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+#==================================================================================================
+# Other Tolls
+#==================================================================================================
+# ruby
+export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@1.1)"
+
+# Postgres
+[ -s "/Applications/Postgres.app/Contents/Versions/latest/bin" ] && export PATH=${PATH}:/Applications/Postgres.app/Contents/Versions/latest/bin
+
+
+#==================================================================================================
+if [[ -a ~/.zshrc-local ]]; then
+  source ~/.zshrc-local
+fi
+
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"

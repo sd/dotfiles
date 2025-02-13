@@ -230,7 +230,7 @@ unless self.class.const_defined? "IRB_RC_HAS_LOADED"
   IRB_RC_HAS_LOADED = true
 
   # Use Pry everywhere
-  require 'pry'
-  Pry.start
-  exit
+  #  require 'pry'
+  #  Pry.start
+  # exit
 end
