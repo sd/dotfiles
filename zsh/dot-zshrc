@@ -77,9 +77,17 @@ setopt HIST_REDUCE_BLANKS
 #setopt INC_APPEND_HISTORY
 HISTSIZE=1000
 
-#==================================================================================================
+# Antigen Plugins
+source ~/.zsh/antigen.zsh
+antigen bundle zsh-users/zsh-syntax-highlighting
+antigen bundle zsh-users/zsh-completions
+antigen bundle zsh-users/zsh-autosuggestions
+antigen apply
+
+# FZF Integration - https://github.com/junegunn/fzf?tab=readme-ov-file#key-bindings-for-command-line
+source <(fzf --zsh)
+
 # Starship Prompt
-#==================================================================================================
 export STARSHIP_CONFIG=~/.starship.toml
 eval "$(starship init zsh)"
 
@@ -376,7 +384,6 @@ if [[ -a ~/.zshrc-local ]]; then
 fi
 
 
-
 test -e "${HOME}/.zsh/iterm2_shell_integration.zsh" && source "${HOME}/.zsh/iterm2_shell_integration.zsh" || true
 
 
@@ -386,6 +393,7 @@ export STM32_PRG_PATH=/Applications/STMicroelectronics/STM32Cube/STM32CubeProgra
 #==================================================================================================
 # Mise should be activated at the very end. It hooks into prompt variables so it should come after any change to these.
 if [[ -e /opt/homebrew/bin/mise ]]; then
+  MISE_ENV_FILE=".env"
   # if [[ "$TERM_PROGRAM" == "vscode" ]]; then
   #   eval "$(/opt/homebrew/bin/mise activate zsh --shims)"
   # else
